@@ -1,0 +1,33 @@
+;
+; ADC_sa_merenjem.asm
+;
+; Created: 17/06/2022 22:33:43
+; Author : Aleksandar Bogdanovic
+;
+
+.include "m328pdef.inc"
+.org 0x00
+
+	LDI R20, 0xFF
+	OUT DDRD, R20
+	OUT DDRB, R20
+	SBI DDRC, 0
+
+	LDI R20, 0xE0
+	STS ADMUX, R20
+	LDI R20, 0x81
+	STS ADCSRA, R20
+read_ADC:
+	LDI R20, 0xC7
+	STS ADCSRA, R20
+wait_ADC:
+	LDS R21, ADCSRA
+	SBRS R21, 4
+	RJMP wait_ADC
+	LDI R17, 0xD7
+	STS ADCSRA, R17
+	LDS R18, ADCL
+	LDS R19, ADCH
+	OUT PORTD, R18
+	OUT PORTB, R19
+	RJMP read_ADC
